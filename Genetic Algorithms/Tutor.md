@@ -2,7 +2,7 @@
 
 Генетический алгоритм - алгоритм эмулирующий эволюцию, его главная идея - скрещивание. Особи с более хорошими генами имеют больший шанс скрестится и передать свой _генотип_ в следующие поколение.
 
-> ## Тезарус
+> ## Тезаурус
 >
 > _генотип_ - совокупность генов _индивидуума_
 >
@@ -62,7 +62,7 @@ class Individual:
         point = random.randint(1, 3)
 ```
 
-создади два новых генотипа с помощью срезов:
+создадим два новых генотипа с помощью срезов:
 
 ```python
     def mutate(self, other):
@@ -78,16 +78,16 @@ class Individual:
 Каждый ген с шансом 5% может изменится.
 
 ```python
-    def mutate(self, other, probiblity=5):
+    def mutate(self, other, probability=5):
         point = random.randint(1, 3)
         new_gen1 = self.genotype[:point] + other.genotype[point:]
         new_gen2 = other.genotype[:point] + self.genotype[point:]
 
         for i in range(len(new_gen1)):
-            if random.randint(1, 100) <= probiblity:
+            if random.randint(1, 100) <= probability:
                 new_gen1[i] = random.randint(0, 2)
         for i in range(len(new_gen2)):
-            if random.randint(1, 100) <= probiblity:
+            if random.randint(1, 100) <= probability:
                 new_gen2[i] = random.randint(0, 2)
 
         return (Individual(new_gen1), Individual(new_gen2)) # Возвращаем две новых особи
@@ -99,7 +99,7 @@ class Individual:
 
 ```python
 def create_first_generation(size):
-    ind = [] # Список со всеми индивидууами
+    ind = [] # Список со всеми индивидуумами
     for _ in range(size):
         ind.append(Individual([random.randint(0, 2) for _ in range(5)])) # создаём список из 5 случайных элементов от 0 до 2
     return ind 
@@ -107,19 +107,19 @@ def create_first_generation(size):
 
 ## Вычисление приспособленности особи
 
-Что бы выбирать лучших подителей, мы должны вичислять из приспособленность (англ. _fitness_). Добавим для этого отдельный метод в класс индивидуума:
+Что бы выбирать лучших родителей, мы должны вычислять из приспособленность (англ. _fitness_). Добавим для этого отдельный метод в класс индивидуума:
 
 ```python
 class Individual:
 
     ...
 
-    @property # деоратор property позволяет вызывать метод без скобок
+    @property # декоратор property позволяет вызывать метод без скобок
     def fitness(self):
         ...
 ```
 
-Метод вычисления фитнесса будет возвращать значения от 0 до 1, где 1 - наиболее приспособленные индивидуумы. Для этого найдём сумму генотипа (сумма чисел самого плохого генотипа - 10, самого хорошего - 0), разделим на 10 и вычтем из единицы:
+Метод вычисления фитнеса будет возвращать значения от 0 до 1, где 1 - наиболее приспособленные индивидуумы. Для этого найдём сумму генотипа (сумма чисел самого плохого генотипа - 10, самого хорошего - 0), разделим на 10 и вычтем из единицы:
 
 ```python
     @property
@@ -129,16 +129,16 @@ class Individual:
 
 ## Выбор родителей
 
-Вовремя создания нового поколения будем выбирать родителей следующим образом: чем выше фитнесс тем выше шанс стать родителем. Таким образом родители с лучшими генами будут передавать свои гены в следующие поколения.
+Вовремя создания нового поколения будем выбирать родителей следующим образом: чем выше фитнеса тем выше шанс стать родителем. Таким образом родители с лучшими генами будут передавать свои гены в следующие поколения.
 
-Создадим функцию `choise_parents`, которая будет принимать как аргумент массив индивидуумов, а возвращать индексы двух родителей.
+Создадим функцию `choice_parents`, которая будет принимать как аргумент массив индивидуумов, а возвращать индексы двух родителей.
 
 ```python
-def choise_parents(ind_arr):
+def choice_parents(ind_arr):
     sum_ = 0
     p_arr = [] # Массив вероятностей
     for i in ind_arr:
-        p_arr.append(i.fitness + sum_) # Добавляем в массив вероятностей фитнесс особи + сумма всех предыдущих элементов
+        p_arr.append(i.fitness + sum_) # Добавляем в массив вероятностей фитнес особи + сумма всех предыдущих элементов
         sum_ += i.fitness
     ind_number = random.uniform(0.0, sum_) # случайное дробное число
     ind1 = 0 # индекс первого родителя
@@ -167,11 +167,11 @@ def generate(size, gen_count):
     for i in range(gen_count):
         if gen_count % 2 == 0:
             for i in range(size // 2):
-                ind1, ind2 = choise_parents(even_gen) # Выбираем родителей
+                ind1, ind2 = choice_parents(even_gen) # Выбираем родителей
                 odd_gen[i * 2], odd_gen[i * 2 + 1] = even_gen[ind1].mutate(even_gen[ind2])
         else:
             for i in range(size // 2):
-                ind1, ind2 = choise_parents(odd_gen) # Выбираем родителей
+                ind1, ind2 = choice_parents(odd_gen) # Выбираем родителей
                 even_gen[i * 2], even_gen[i * 2 + 1] = odd_gen[ind1].mutate(odd_gen[ind2])
 ```
 
