@@ -162,10 +162,14 @@ def choice_parents(ind_arr):
 ```python
 even_gen = []
 odd_gen = []
+generations = 0
 
-def generate(size, gen_count):
-    for i in range(gen_count):
-        if gen_count % 2 == 0:
+...
+
+def generate(size):
+    global generations
+    while True:
+        if generations % 2 == 0:
             for i in range(size // 2):
                 ind1, ind2 = choice_parents(even_gen) # Выбираем родителей
                 odd_gen[i * 2], odd_gen[i * 2 + 1] = even_gen[ind1].mutate(even_gen[ind2])
@@ -173,6 +177,79 @@ def generate(size, gen_count):
             for i in range(size // 2):
                 ind1, ind2 = choice_parents(odd_gen) # Выбираем родителей
                 even_gen[i * 2], even_gen[i * 2 + 1] = odd_gen[ind1].mutate(odd_gen[ind2])
+        generations += 1
 ```
 
-Осталось только запустить! Полный Файл который можно запустить можно найти в этой же директории.
+## Остановка
+
+Мы незнаем сколько поколений нам понадобится. Поэтому, в функции вычисления фитнеса, добавим остановку, если найдена идеальная особь:
+
+```python
+    @property
+    def fitness(self):
+        global generations
+        fitness = 1 - sum(self.genotype) / 10
+        if (fitness == 1):
+            print('Найдена идеальная особь!', self.genotype, f'Поколений пройдено: {generations}', sep='\n') # Печатаем информацию об решении
+            exit() # Завершаем программу
+        return fitness
+```
+
+## Запуск
+
+Осталось только запустить! Полный Файл (Main-1.py) можно найти в этой же директории.
+
+## Приближение к реальности
+
+Давайте заставим наш алгоритм решать действительно полезную задачу. Например, найти решение уравнения:
+
+x + 2y + 3z - n = 15
+
+В этом случае генотипом будет четыре числа - x, y, z, n. Что бы алгоритм работал не слишком медленно, условимся, что их значения будут лежать в диапазоне 0 - 5. У самой приспособленной особи будет фитнес 15, у самой неприспособленной - 0. Начнём с вычисления фитнеса.
+
+Его можно вычислить по формуле:
+
+$$ 15 - |15 - (x + 2y + 3z - n)| $$
+
+"Разберём" формулу: часть в центральных скобках - не что иное, как наше уравнения. Результат мы два раза вычитаем из 15, но в первый берём модуль. т. е. мы из 15 вычитаем разность между результатом формулы и 15.
+
+15 превращается в 15
+
+14 превращается в 14
+
+16 превращается в 14
+
+```python
+@property
+def fitness(self):
+    global generations
+    fitness = max(0, 15 - abs(15 - (self.genotype[0] + 2 * self.genotype[1] + 3 * self.genotype[2] - self.genotype[3])))
+    if (fitness == 15):
+        print('Решение найдено!', f'{self.genotype[0]} + 2 * {self.genotype[1]} + 3 * {self.genotype[2]} - {self.genotype[3]} = 15', f'Поколений пройдено: {generations}', sep='\n')
+        exit()
+    return fitness
+```
+
+## Новая мутация
+
+Теперь вместо записи случайного числа,  число может случайным образом изменится на 1.
+
+```python
+def mutate(self, other, probability=5):
+    point = random.randint(1, 2)
+    new_gen1 = self.genotype[:point] + other.genotype[point:]
+    new_gen2 = other.genotype[:point] + self.genotype[point:]
+
+    for i in range(len(new_gen1)):
+        if random.randint(1, 100) <= probability:
+            new_gen1[i] += random.choice([1, -1])
+    for i in range(len(new_gen2)):
+        if random.randint(1, 100) <= probability:
+            new_gen2[i] += random.choice([1, -1])
+
+    return (Individual(new_gen1), Individual(new_gen2))
+```
+
+## Запуск второй задачи
+
+Код лежит в этом же каталоге с именем `Main-2.py`. Алгоритм обычно находит решение 0 - 5 поколений (10 особей).

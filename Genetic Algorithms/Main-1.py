@@ -1,5 +1,9 @@
 import random
 
+generations = 0
+even_gen = []
+odd_gen = []
+
 class Individual:
     genotype: list # Класс содержит всего одно поле - генотип
 
@@ -22,7 +26,12 @@ class Individual:
 
     @property
     def fitness(self):
-        return 1 - sum(self.genotype) / 10
+        global generations
+        fitness = 1 - sum(self.genotype) / 10
+        if (fitness == 1):
+            print('Найдена идеальная особь!', self.genotype, f'Поколений пройдено: {generations}', sep='\n')
+            exit()
+        return fitness
 
 def create_first_generation(size):
     ind = [] # Список со всеми индивидууами
@@ -50,12 +59,10 @@ def choice_parents(ind_arr):
                 break
         return (ind1, ind2)
 
-even_gen = []
-odd_gen = []
-
-def generate(size, gen_count):
-    for i in range(gen_count):
-        if gen_count % 2 == 0:
+def generate(size):
+    global generations
+    while True:
+        if generations % 2 == 0:
             for i in range(size // 2):
                 ind1, ind2 = choice_parents(even_gen) # Выбираем родителей
                 odd_gen[i * 2], odd_gen[i * 2 + 1] = even_gen[ind1].mutate(even_gen[ind2])
@@ -63,9 +70,8 @@ def generate(size, gen_count):
             for i in range(size // 2):
                 ind1, ind2 = choice_parents(odd_gen) # Выбираем родителей
                 even_gen[i * 2], even_gen[i * 2 + 1] = odd_gen[ind1].mutate(odd_gen[ind2])
+        generations += 1
 
 if __name__ == '__main__':
     even_gen, odd_gen = create_first_generation(100), [None for i in range(100)]
-    generate(100, 200)
-    for i in range(100):
-        print(f'{i} | {even_gen[i].genotype} - {even_gen[i].fitness}')
+    generate(100)
