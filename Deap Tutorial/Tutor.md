@@ -114,4 +114,51 @@ def indFitness(individual):
 toolbox.register('evaluate', indFitness) # принятое в DEAP соглашение. evaluate - фитнес
 ```
 
-# После набора 10-и звездочек и 3-х подписок на репозитоирии выходит следующая часть!!!
+### Создаём генетические операторы
+
+```python
+toolbox.register('chooce_parents', tools.selTournament, tournsize=3) # Выбор родителей методом турнира
+toolbox.register('crosssover', tools.cxOnePoint) # Кроссинговер
+toolbox.register('mutate', tools.mutFlipBit, indpb=1.0/GENOTYPE_LEN) # Мутация методом инвентирования бита
+```
+
+## Создание первого поколения
+
+Для этого мы используем функцию `tools.initRepeat`:
+
+```python
+tools.initRepeat(<контейнер>, <заполняющая_функция>, <количество_выходных_элементов>)
+```
+
+Эта функция возвращает контейнер _контейнер_ заполненый _заполняющей_функцией_. На пример, данный код создаёт список из 30 случайных элементов от 1 до 5:
+
+```python
+a = tools.initRepeat(list, random.randint(1, 5), 30)
+```
+
+В нашем случае понадобится следующее:
+
+```python
+toolbox.regiter('population_creator', tools.initRepeat(list, tools.initRepeat(Individual, toolbox.zero_or_one, GENOTYPE_LEN), POPULATION_SIZE))
+```
+
+## Смена поколений
+
+### Объявим нужные переменнные
+
+```python
+population = toolbox.population_creator() # Первое поколение
+generations = 0 # Количество поколений
+maxFitnessValues = [0, ] # Сохраним максимальные значения Фитнесса
+```
+
+### Главный цикл
+
+Будем чередовать поколения, пока не найдём лучшего индивидуума
+
+```python
+while maxFitnessValues[-1] < 100:
+    ...
+```
+
+# После набора 15-и звездочек и 3-х подписок на репозитоирии выходит следующая часть!!!
