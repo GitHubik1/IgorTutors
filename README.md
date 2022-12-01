@@ -4,5 +4,6 @@
 - [Классы](https://github.com/GitHubik1/IgorTutors/blob/main/Classes%20Tutorial/Tutor.md)
 - [Генетические Алгоритмы](https://github.com/GitHubik1/IgorTutors/blob/main/Genetic%20Algorithms/Tutor.md)
 - [Библиотека DEAP](https://github.com/GitHubik1/IgorTutors/blob/main/Deap%20Tutorial/Tutor.md)
+- [Библиотека Wikipedia](https://github.com/GitHubik1/IgorTutors/tree/main/Wikipedia)
 
 Нашли ошибку в одном из туториалов? Напишите [сюда](https://github.com/GitHubik1/IgorTutors/issues)
