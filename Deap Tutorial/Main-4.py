@@ -5,7 +5,6 @@ import random
 
 GENOTYPE_LEN = 100 # Длинна генотипа
 POPULATION_SIZE = 50 # Размер популяции
-MAX_GENERATIONS = 200 # Максимальное количество поколений
 P_MUTATION = 0.1 # Вероятность мутации (от 0 до 1)
 
 toolbox = base.Toolbox()
@@ -22,7 +21,8 @@ toolbox.register('evaluate', indFitness) # принятое в DEAP соглаш
 toolbox.register('chooce_parents', tools.selTournament, tournsize=3) # Выбор родителей методом турнира
 toolbox.register('crosssover', tools.cxOnePoint) # Кроссинговер
 toolbox.register('mutate', tools.mutFlipBit, indpb=1.0/GENOTYPE_LEN) # Мутация методом инвентирования бита
-toolbox.register('population_creator', tools.initRepeat(list, tools.initRepeat(creator.Individual, toolbox.zero_or_one, GENOTYPE_LEN), POPULATION_SIZE))
+toolbox.register('create_individual', tools.initRepeat, creator.Individual, toolbox.zero_or_one, GENOTYPE_LEN)
+toolbox.register('population_creator', tools.initRepeat, list, toolbox.create_individual, POPULATION_SIZE)
 
 population = toolbox.population_creator() # Первое поколение
 generations = 0 # Количество поколений
